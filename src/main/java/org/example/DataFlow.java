@@ -6,9 +6,10 @@ import java.util.Map;
 
 public class DataFlow {
     public static void main(String[] args) {
+
         List<Population<String, Integer>> populationData = new ArrayList<>();
 
-        // 2️⃣ Ajouter des pays dynamiquement
+        // Ajouter des pays dynamiquement
         populationData.add(new Population<>("FR", "France", "Paris", "Français", 67413000));
         populationData.add(new Population<>("JP", "Japon", "Tokyo", "Japonais", 125800000));
         populationData.add(new Population<>("CA", "Canada", "Ottawa", "Anglais", 38008005));
@@ -17,14 +18,14 @@ public class DataFlow {
         System.out.println("✅ Données Initiales :");
         populationData.forEach(System.out::println);
 
-        // 3️⃣ Appliquer le filtre sur la langue (Anglais uniquement)
+        // Appliquer le filtre sur la langue (Anglais uniquement)
         List<Population<String, Integer>> filteredByLanguage = FilterByLanguage.filter(populationData);
         System.out.println("\n✅ Données filitrés selon la langue : anglais :");
         filteredByLanguage.forEach(System.out::println);
 
         // 4️⃣ Appliquer le filtre sur la population (> 30M)
         List<Population<String, Integer>> filteredByPopulation = FilterByPopulation.filter(filteredByLanguage);
-        System.out.println("\n✅ Pays anglophones avec +30M d’habitants :");
+        System.out.println("\n Pays anglophones avec +30M d’habitants :");
         filteredByPopulation.forEach(System.out::println);
 
         // 5️⃣ Appliquer la transformation et récupérer la liste des catégories
@@ -49,6 +50,17 @@ public class DataFlow {
                 (pop, ind) -> pop.country() + ": Population = " + pop.population() + ", Poverty Rate = " + ind.povertyRate() + ", Literacy Rate = " + ind.literacyRate()
         );
         aggregatedData.forEach(System.out::println);
+
+        //Normaliser les données de population (convertir en millions)
+        List<String> normalizedData = FixData.normalizePopulationList(
+                aggregatedData,
+                pop -> String.format("%.2fM", pop.doubleValue() / 1_000_000) // Conversion en millions
+        );
+
+        System.out.println("\n✅ Population Normalisée (avec Literacy Rate) :");
+        normalizedData.forEach(System.out::println);
+
+
     }
 
     }
