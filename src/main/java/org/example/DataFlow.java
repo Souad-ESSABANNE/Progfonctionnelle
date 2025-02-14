@@ -33,5 +33,23 @@ public class DataFlow {
         System.out.println("\n✅ Catégories associées aux pays :");
         categoryMap.forEach((key, value) ->
                 System.out.println("Référence: " + key + " -> Catégorie: " + value));
+
+
+        //ajout des indicateurs socials
+        List<SocialIndicators<String, Integer>> socialIndicators = new ArrayList<>();
+        socialIndicators.add(new SocialIndicators("France", 13.6, 99.0));
+        socialIndicators.add(new SocialIndicators("Japon", 15.7, 99.0));
+        socialIndicators.add(new SocialIndicators("Canada", 9.5, 99.0));
+        socialIndicators.add( new SocialIndicators("Vietnam", 9.8, 94.5));
+        socialIndicators.add( new SocialIndicators("Danemark", 5.0, 99.0));
+        socialIndicators.add(new SocialIndicators("Suède", 7.0, 99.0));
+        socialIndicators.add( new SocialIndicators("États-Unis", 11.8, 99.0));
+        List<String> aggregatedData = Aggregator.aggregate(
+                populationData,
+                socialIndicators,
+                (pop, ind) -> pop.country() + ": Population = " + pop.population() + ", Poverty Rate = " + ind.povertyRate() + ", Literacy Rate = " + ind.literacyRate()
+        );
+        aggregatedData.forEach(System.out::println);
     }
-}
+
+    }
