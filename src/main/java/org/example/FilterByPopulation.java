@@ -1,10 +1,9 @@
+package org.example;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FilterByPopulation {
-    public static List<Population> filter(List<Population> data) {
-        return data.stream()
-                .filter(p -> p.population() > 30000000)
-                .collect(Collectors.toList());
+    public static <T, U extends Number> List<Population<T, U>> filter(List<Population<T, U>> data) {
+        return GenericFilter.filter(data, p -> p.population().longValue() > 30000000);
     }
 }
