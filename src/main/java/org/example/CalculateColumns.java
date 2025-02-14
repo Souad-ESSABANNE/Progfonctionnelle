@@ -6,16 +6,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CalculateColumns {
-    public static <T, R, U extends Number> Map<T, R> transform(List<Population<T, U>> data, Function<Population<T, U>, T> keyExtractor, Function<Population<T, U>, R> valueExtractor) {
+    public static <T, R, U> List<Pair<T, R>> transform(
+            List<U> data,
+            Function<U, T> keyExtractor,
+            Function<U, R> valueExtractor) {
         return data.stream()
-                .collect(Collectors.toMap(
-                        keyExtractor,  // Clé = Référence du pays
-                        valueExtractor // Valeur = Catégorie calculée
-                ));
+                .map(item -> new Pair<>(keyExtractor.apply(item), valueExtractor.apply(item)))
+                .collect(Collectors.toList());
     }
 
+    // Cette méthode crée une liste de catégories basée sur les populations
+    public static <T> List<Pair<T, String>> getCategoryList(
+            List<Population<T, Integer>> data) {
+        return transform(
+                data,
+                Population::reference,  // Clé = Référence du pays
+                p -> categorizePopulation(p.population()) // Valeur = Catégorie calculée
+        );
+    }
+
+    // Logique pour catégoriser les populations en fonction de leur taille
     private static String categorizePopulation(Number population) {
-        int pop = population.intValue(); // Convertit `U` en `int`
+        int pop = population.intValue();
         if (pop < 50000000) {
             return "Small";
         } else if (pop <= 150000000) {
@@ -23,13 +35,5 @@ public class CalculateColumns {
         } else {
             return "Large";
         }
-    }
-
-    public static <T> Map<T, String> getCategoryMap(List<Population<T, Integer>> data) {
-        return transform(
-                data,
-                Population::reference,  // Clé = Référence du pays
-                p -> categorizePopulation(p.population()) // Valeur = Catégorie calculée
-        );
     }
 }

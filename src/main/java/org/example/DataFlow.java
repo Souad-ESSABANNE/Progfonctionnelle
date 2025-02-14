@@ -6,7 +6,6 @@ import java.util.Map;
 
 public class DataFlow {
     public static void main(String[] args) {
-        // 1️⃣ Créer une liste vide pour Population<String, Integer>
         List<Population<String, Integer>> populationData = new ArrayList<>();
 
         // 2️⃣ Ajouter des pays dynamiquement
@@ -15,12 +14,12 @@ public class DataFlow {
         populationData.add(new Population<>("CA", "Canada", "Ottawa", "Anglais", 38008005));
         populationData.add(new Population<>("US", "États-Unis", "Washington D.C.", "Anglais", 331000000));
 
-        System.out.println("✅ Données après ajout :");
+        System.out.println("✅ Données Initiales :");
         populationData.forEach(System.out::println);
 
         // 3️⃣ Appliquer le filtre sur la langue (Anglais uniquement)
         List<Population<String, Integer>> filteredByLanguage = FilterByLanguage.filter(populationData);
-        System.out.println("\n✅ Pays anglophones :");
+        System.out.println("\n✅ Données filitrés selon la langue : anglais :");
         filteredByLanguage.forEach(System.out::println);
 
         // 4️⃣ Appliquer le filtre sur la population (> 30M)
@@ -28,13 +27,12 @@ public class DataFlow {
         System.out.println("\n✅ Pays anglophones avec +30M d’habitants :");
         filteredByPopulation.forEach(System.out::println);
 
-        // 5️⃣ Appliquer la transformation et récupérer la Map des catégories
-        Map<String, String> categoryMap = CalculateColumns.getCategoryMap(filteredByPopulation);
+        // 5️⃣ Appliquer la transformation et récupérer la liste des catégories
+        List<Pair<String, String>> categoryList = CalculateColumns.getCategoryList(filteredByPopulation);
         System.out.println("\n✅ Catégories associées aux pays :");
-        categoryMap.forEach((key, value) ->
-                System.out.println("Référence: " + key + " -> Catégorie: " + value));
-
-
+        categoryList.forEach(pair ->
+                System.out.println("Référence: " + pair.key() + " -> Catégorie: " + pair.valeur()));
+        System.out.println("Donnees a aggreger avec les données initiales");
         //ajout des indicateurs socials
         List<SocialIndicators<String, Integer>> socialIndicators = new ArrayList<>();
         socialIndicators.add(new SocialIndicators("France", 13.6, 99.0));
@@ -44,6 +42,7 @@ public class DataFlow {
         socialIndicators.add( new SocialIndicators("Danemark", 5.0, 99.0));
         socialIndicators.add(new SocialIndicators("Suède", 7.0, 99.0));
         socialIndicators.add( new SocialIndicators("États-Unis", 11.8, 99.0));
+        System.out.println("✅aDonnees apres aggregation");
         List<String> aggregatedData = Aggregator.aggregate(
                 populationData,
                 socialIndicators,
