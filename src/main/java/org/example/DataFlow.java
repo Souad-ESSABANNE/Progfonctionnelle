@@ -3,6 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataFlow {
     public static void main(String[] args) {
@@ -36,11 +37,11 @@ public class DataFlow {
         System.out.println("Donnees a aggreger avec les données initiales");
         //ajout des indicateurs socials
         List<SocialIndicators<String, Integer>> socialIndicators = new ArrayList<>();
-        socialIndicators.add(new SocialIndicators("France", 13.6, 99.0));
-        socialIndicators.add(new SocialIndicators("Japon", 15.7, 99.0));
+        socialIndicators.add(new SocialIndicators("France", 13.6, 90.0));
+        socialIndicators.add(new SocialIndicators("Japon", 15.7, 92.0));
         socialIndicators.add(new SocialIndicators("Canada", 9.5, 99.0));
         socialIndicators.add( new SocialIndicators("Vietnam", 9.8, 94.5));
-        socialIndicators.add( new SocialIndicators("Danemark", 5.0, 99.0));
+        socialIndicators.add( new SocialIndicators("Danemark", 5.0, 95.0));
         socialIndicators.add(new SocialIndicators("Suède", 7.0, 99.0));
         socialIndicators.add( new SocialIndicators("États-Unis", 11.8, 99.0));
         System.out.println("✅aDonnees apres aggregation");
@@ -51,15 +52,32 @@ public class DataFlow {
         );
         aggregatedData.forEach(System.out::println);
 
-        //Normaliser les données de population (convertir en millions)
+        //Normaliser les données de population (convertir en millions)--> fixData
         List<String> normalizedData = FixData.normalizePopulationList(
                 aggregatedData,
                 pop -> String.format("%.2fM", pop.doubleValue() / 1_000_000) // Conversion en millions
         );
 
-        System.out.println("\n✅ Population Normalisée (avec Literacy Rate) :");
+        System.out.println("\n✅ Population Normalisée (avec Literacy Rate)--> :");
         normalizedData.forEach(System.out::println);
 
+
+
+
+    // Extraction de la colonne Literacy Rate-->ColumnSelector
+        List<String> selectedLiteracyRate = ColumnSelector.selectColumn(
+                normalizedData,
+                data -> {
+                    String[] parts = data.split(", ");
+                    return parts[2].split("=")[1].trim(); // Extraction de Literacy Rate
+                });
+
+        System.out.println("\n✅ Colonnes Literacy Rate Sélectionnées :");
+        selectedLiteracyRate.forEach(System.out::println);
+
+        //  Affichage final en mentionnant que `normalizedData` est aussi `enhancedData`
+        System.out.println("\n✅ Enhanced Data (data apres Normalized Data) :");
+        normalizedData.forEach(System.out::println);
 
     }
 
