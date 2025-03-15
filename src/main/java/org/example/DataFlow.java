@@ -46,8 +46,11 @@ public class DataFlow {
         long categoryStart = System.nanoTime();
         List<Pair<String, String>> categoryList = CalculateColumns.getCategoryList(filteredByPopulation);
         System.out.println("\n✅ Catégories associées aux pays :");
-        categoryList.forEach(pair ->
-                System.out.println("Référence: " + pair.key() + " -> Catégorie: " + pair.valeur()));
+        System.out.println("   🟢 Small  -> < 50M habitants");
+        System.out.println("   🟡 Medium -> >= 50M et <= 150M habitants");
+        System.out.println("   🔴 Large  -> > 150M habitants");
+
+        categoryList.forEach(System.out::println);
         System.out.println(" Temps pour catégorisation : " + (System.nanoTime() - categoryStart) / 1_000_000 + " ms");
 
         // Ajout des indicateurs sociaux
@@ -60,6 +63,9 @@ public class DataFlow {
         socialIndicators.add(new SocialIndicators("Suède", 7.0, 99.0));
         socialIndicators.add( new SocialIndicators("États-Unis", 11.8, 99.0));
 
+        // Afficher les Social Indicators avant l'agrégation
+        System.out.println("\n✅ Social Indicators Disponibles :");
+        socialIndicators.forEach(System.out::println);
         //  Agrégation des données avec `CompletableFuture` pour exécution parallèle
         long aggregationStart = System.nanoTime();
         List<String> aggregatedData = Aggregator.aggregate(
