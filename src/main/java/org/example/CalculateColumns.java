@@ -11,6 +11,7 @@ public class CalculateColumns {
             Function<U, T> keyExtractor,
             Function<U, R> valueExtractor) {
         return data.parallelStream()
+                .peek(item -> System.out.println("Thread " + Thread.currentThread().getName() + " traite : " + item))
                 .map(item -> new Pair<>(keyExtractor.apply(item), valueExtractor.apply(item)))
                 .collect(Collectors.toList());
     }
