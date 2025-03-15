@@ -28,9 +28,8 @@ public class DataFlow {
         long filterStart = System.nanoTime();
 
         // Appliquer le filtre sur la langue en parallèle
-        System.out.println("\n -> Nombre de threads avant filtrage : " + Thread.activeCount());
+
         List<Population<String, Integer>> filteredByLanguage = FilterByLanguage.filter(populationData);
-        System.out.println("-> Nombre de threads après filtrage : " + Thread.activeCount());
         System.out.println("\n✅ Données filtrées selon la langue : anglais :");
         filteredByLanguage.forEach(System.out::println);
         System.out.println("Temps pour filtrer par langue : " + (System.nanoTime() - filterStart) / 1_000_000 + " ms");
@@ -38,9 +37,7 @@ public class DataFlow {
 
         long popFilterStart = System.nanoTime();
         // Appliquer le filtre sur la population (> 30M) en parallèle
-        System.out.println("\n-> Nombre de threads avant filtrage population : " + Thread.activeCount());
         List<Population<String, Integer>> filteredByPopulation = FilterByPopulation.filter(filteredByLanguage);
-        System.out.println("-> Nombre de threads après filtrage population : " + Thread.activeCount());
         System.out.println("\n✅ Pays anglophones avec +30M d’habitants :");
         filteredByPopulation.forEach(System.out::println);
         System.out.println(" Temps pour filtrer par population : " + (System.nanoTime() - popFilterStart) / 1_000_000 + " ms");

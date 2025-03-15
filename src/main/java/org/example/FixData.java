@@ -8,7 +8,11 @@ public class FixData {
     public static <T, U extends Number, V> List<String> normalizePopulationList(
             List<String> aggregatedData, Function<U, V> valueTransformer) {
         return aggregatedData.parallelStream()
-                .peek(item -> System.out.println("Thread " + Thread.currentThread().getName() + " traite : " + item))
+                .peek(item -> {
+                    synchronized (System.out) { // 🔹 Assure un affichage propre
+                        System.out.println("🔄 Thread " + Thread.currentThread().getName() + " traite : " + item);
+                    }
+                })
                 .map(data -> {
                     String[] parts = data.split(", ");
                     String country = parts[0].split(": ")[0];
