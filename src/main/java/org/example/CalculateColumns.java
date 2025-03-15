@@ -10,7 +10,7 @@ public class CalculateColumns {
             List<U> data,
             Function<U, T> keyExtractor,
             Function<U, R> valueExtractor) {
-        return data.stream()
+        return data.parallelStream()
                 .map(item -> new Pair<>(keyExtractor.apply(item), valueExtractor.apply(item)))
                 .collect(Collectors.toList());
     }

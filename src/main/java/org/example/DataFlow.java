@@ -28,28 +28,26 @@ public class DataFlow {
         long filterStart = System.nanoTime();
 
         // Appliquer le filtre sur la langue en parallèle
-        System.out.println("Thread utilisé pour le filtrage par langue : " + Thread.currentThread().getName());
-        List<Population<String, Integer>> filteredByLanguage = populationData.parallelStream()
-                .filter(p -> p.language().equals("Anglais"))
-                .collect(Collectors.toList());
+        System.out.println("\n -> Nombre de threads avant filtrage : " + Thread.activeCount());
+        List<Population<String, Integer>> filteredByLanguage = FilterByLanguage.filter(populationData);
+        System.out.println("-> Nombre de threads après filtrage : " + Thread.activeCount());
         System.out.println("\n✅ Données filtrées selon la langue : anglais :");
         filteredByLanguage.forEach(System.out::println);
         System.out.println("Temps pour filtrer par langue : " + (System.nanoTime() - filterStart) / 1_000_000 + " ms");
 
+
         long popFilterStart = System.nanoTime();
         // Appliquer le filtre sur la population (> 30M) en parallèle
-        List<Population<String, Integer>> filteredByPopulation = filteredByLanguage.parallelStream()
-                .filter(p -> p.population() > 30000000)
-                .collect(Collectors.toList());
+        System.out.println("\n-> Nombre de threads avant filtrage population : " + Thread.activeCount());
+        List<Population<String, Integer>> filteredByPopulation = FilterByPopulation.filter(filteredByLanguage);
+        System.out.println("-> Nombre de threads après filtrage population : " + Thread.activeCount());
         System.out.println("\n✅ Pays anglophones avec +30M d’habitants :");
         filteredByPopulation.forEach(System.out::println);
         System.out.println(" Temps pour filtrer par population : " + (System.nanoTime() - popFilterStart) / 1_000_000 + " ms");
 
         //  Récupérer la liste des catégories en parallèle
         long categoryStart = System.nanoTime();
-        List<Pair<String, String>> categoryList = filteredByPopulation.parallelStream()
-                .map(p -> new Pair<>(p.reference(), p.population() > 100000000 ? "Large" : "Small"))
-                .collect(Collectors.toList());
+        List<Pair<String, String>> categoryList = CalculateColumns.getCategoryList(filteredByPopulation);
         System.out.println("\n✅ Catégories associées aux pays :");
         categoryList.forEach(pair ->
                 System.out.println("Référence: " + pair.key() + " -> Catégorie: " + pair.valeur()));
@@ -67,35 +65,27 @@ public class DataFlow {
 
         //  Agrégation des données avec `CompletableFuture` pour exécution parallèle
         long aggregationStart = System.nanoTime();
-        List<CompletableFuture<String>> futureAggregations = filteredByPopulation.stream()
-                .map(pop -> CompletableFuture.supplyAsync(() -> {
-                    SocialIndicators<String, Integer> ind = socialIndicators.parallelStream()
-                            .filter(si -> si.country().equals(pop.country()))
-                            .findFirst()
-                            .orElse(new SocialIndicators<>(pop.country(), 0, 0));
+        List<String> aggregatedData = Aggregator.aggregate(
+                filteredByPopulation,
+                socialIndicators,
+                (pop, ind) -> pop.country() + ": Population = " + pop.population() +
+                        ", Poverty Rate = " + ind.povertyRate() +
+                        ", Literacy Rate = " + ind.literacyRate()
+        );
 
-                    return pop.country() + ": Population = " + pop.population() + ", Poverty Rate = " + ind.povertyRate() + ", Literacy Rate = " + ind.literacyRate();
-                }))
-                .toList();
-
-        List<String> aggregatedData = futureAggregations.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
 
         System.out.println("\n✅ Données après agrégation :");
         aggregatedData.forEach(System.out::println);
         System.out.println(" Temps pour agrégation : " + (System.nanoTime() - aggregationStart) / 1_000_000 + " ms");
 
         // Normalisation des données de population (convertir en millions) en parallèle
+
+
         long normalizationStart = System.nanoTime();
-        List<String> normalizedData = aggregatedData.parallelStream()
-                .map(data -> {
-                    String[] parts = data.split(", ");
-                    String populationPart = parts[0].split("=")[1].trim();
-                    double populationValue = Double.parseDouble(populationPart);
-                    return data.replace(populationPart, String.format("%.2fM", populationValue / 1_000_000));
-                })
-                .collect(Collectors.toList());
+        List<String> normalizedData = FixData.normalizePopulationList(
+                aggregatedData,
+                pop -> String.format("%.2fM", pop.doubleValue() / 1_000_000) // Conversion en millions
+        );
 
         System.out.println("\n✅ Enhanced Data (Normalized Data Normalisée avec Literacy Rate)  :");
         normalizedData.forEach(System.out::println);

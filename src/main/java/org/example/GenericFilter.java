@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class GenericFilter {
     public static <T> List<T> filter(List<T> data, Predicate<T> condition) {
-        return data.stream()
+        return data.parallelStream()
                 .filter(condition)
                 .collect(Collectors.toList());
     }

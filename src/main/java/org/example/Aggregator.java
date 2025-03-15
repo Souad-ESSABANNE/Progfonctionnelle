@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 public class Aggregator {
 
     public static <T, U, R> List<R> aggregate(List<Population<T, U>> populationList, List<SocialIndicators<T, U>> indicatorsList, BiFunction<Population<T, U>, SocialIndicators<T, U>, R> aggregator) {
-        return populationList.stream()
+        return populationList.parallelStream()
                 .flatMap(pop -> indicatorsList.stream()
                         .filter(ind -> pop.country().equals(ind.country()))
                         .map(ind -> aggregator.apply(pop, ind))

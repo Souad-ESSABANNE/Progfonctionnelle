@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class FixData {
     public static <T, U extends Number, V> List<String> normalizePopulationList(
             List<String> aggregatedData, Function<U, V> valueTransformer) {
-        return aggregatedData.stream()
+        return aggregatedData.parallelStream()
                 .map(data -> {
                     String[] parts = data.split(", ");
                     String country = parts[0].split(": ")[0];
